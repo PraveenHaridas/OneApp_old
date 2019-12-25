@@ -1,0 +1,342 @@
+# Modify this code to update the DB schema diagram.
+# To reset the sample schema, replace everything with
+# two dots ('..' - without quotes).
+
+# As Global App, the app is expected to support multiple languages nd region/country specific discounts, tax, etc.,
+# LocalisedLanguage is a comma separated value.
+# if LocalisedLanguage = blank,  the referene data entry in the table is all languagess.
+# Otherwise, the entry is applicable only to the language in comma separated values.
+
+# LocaliedCountryspefic is a comma separated value.
+# if LocaliedCountryspefic = blank,  the referene data entry in the table is all countries.
+# Otherwise, the entry is applicable only to the country name in the comma separated values.
+
+Country
+-
+Id int identity
+Code string PK
+Name string 
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+Language
+-
+Id int identity
+Code string PK
+Name string 
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+Currency
+-
+Id int identity
+Code string PK
+Name string 
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+Localisation 
+-
+Id identity int
+LanguageCode  PK string FK >- Language.Code
+CountryCode  PK string   FK >- Country.Code
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+Lookup
+-
+Id identity int
+LocalisationId PK int FK >- Localisation.Id
+#code is always English
+Groupcode PK string
+#code is always English
+Code string PK 
+#Displaycode is language specific.
+DisplayCode string
+Name string
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+#Any Person associated with Business like Customer, Staff, Vendor, Maker, etc.,
+BusinessPerson
+-
+Id  identity int
+# Lookup.GroupCode = BusinessPersonType
+# Type = Lookup.Code [ Customer|Staff|Vendor|Maker|Teacher|etc.,]
+LocalisationId PK int FK >- Localisation.Id
+#code is always English
+Code string PK 
+#Displaycode is language specific.
+DisplayCode string
+LastName string
+FirstName string
+MiddleName string
+Type string FK >- Lookup.Code
+BusinessPersonFamilyId int FK >- BusinessPerson.Id
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+PostalAddress
+-
+Id PK identity int
+LocalisationId PK int FK >- Localisation.Id
+BlockNo string
+StreetName string
+UnitNumber string
+LandMark string
+City string
+State string
+Country string
+ZipCode string
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+# Contact Details Personal Mobile, 
+# Office Desk Phone, Emergency Number, FAX, Emails, Postal Addresses, etc.,
+ContactDetail
+-
+# Lookup.GroupCode = ContactDetailType
+# Type = Lookup.Code [ PersonalMobile|OfficeMobile|FAX|PermanentAddress | CommunicationAddress|Etc.,]
+Id PK Identity  int 
+LocalisationId PK int FK >- Localisation.Id
+Type string FK >- Lookup.Code 
+#nullable because it can be value or postaladdressid. Not a great idea thou.
+value string nullable 
+#PostalAddress is treated as seperate contact type :)
+PostalAddressId int nullable FK >- PostalAddress.Id
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+BusinessPersonContact
+-
+Id Identity int
+BusinessPersonId PK int FK >- BusinessPerson.Id
+ContactDetailId PK int  FK >- ContactDetail.Id
+LocalisationId PK int FK >- Localisation.Id
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+Category
+-
+Id identity int PK
+LocalisationId PK int FK >- Localisation.Id
+#code is always English
+Code string PK 
+#Displaycode is language specific.
+DisplayCode string
+Name string
+Subcode string index
+SubName sttring
+CategoryFamilyId int FK >- Category.Id
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTim
+
+Product
+-
+# BusinessPerson.Type = "Maker"
+# MakerId = BusinessPerson.Id
+Id int identity
+LocalisationId PK int FK >- Localisation.Id
+#code is always English
+Code string PK 
+#Displaycode is language specific.
+DisplayCode string
+Name string
+MakerId  int FK >- BusinessPerson.Id
+Categoryid int FK >- Category.Id
+version string
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTim
+
+Inventory
+-
+# BusinessPerson.Type = "Vendor"
+# MakerId = BusinessPerson.Id
+# Lookup.GroupCode = UnitofMeasure
+# UnitofMeasure = Lookup.Code [ KG/Feet/CM/Meters/etc.,]
+# BusinessPerson.Type = "StoreHouse"
+# MakerId = BusinessPerson.Id
+Id int identity
+LocalisationId PK int FK >- Localisation.Id
+ProductId PK int FK >- Product.Id
+Vendorid PK int FK  >- BusinessPerson.Id
+Quantity float 
+Lotsize float
+UnitofMeasure string FK >- Lookup.Code
+StoreId int FK  >- BusinessPerson.Id
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTim
+
+ProductDetail
+-
+# Lookup.GroupCode = ProductDetailKey
+# Key = Lookup.Code [MemorySize|Color|Weight|DisplaySize|etc.,]
+# Lookup.GroupCode = VisualType
+# Type = Lookup.Code [pdf|doc|png|jpg|etc.,]
+Id int identity
+LocalisationId PK int FK >- Localisation.Id
+ProductId PK int FK >- Product.Id
+Key PK string FK >- Lookup.Code
+Value string
+VisualValue blob
+VisualValueType string FK >- Lookup.Code
+SequenceOrder int
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTim
+
+# Prince and Discount vary betweeen different store locations
+ProductPrice
+-
+Id int Identity
+ProductId int FK >- Product.Id
+InventoryId int FK >- Inventory.Id
+EffectiveDate date
+Price  decimal(18,6)
+Currency string  FK >- Currency.Code
+DiscountedPrice
+DiscountPercentage
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+# Product Ad like Discounts, other offfers, etc,
+ProductCampaign
+# Lookup.GroupCode = ProductCapaignKey
+# Key = Lookup.Code [FrontView|BackView|XmasOffer|etc.,
+# Lookup.GroupCode = VisualType
+# VisualValueType = Lookup.Code [pdf|doc|png|jpg|etc.,]
+-
+Id int Identity
+Code PK string
+LocalisationId PK int FK >- Localisation.Id
+ProductId PK int FK >- Product.Id
+Key PK string FK >- Lookup.Code
+Value string
+VisualValue blob
+VisualValueType string FK >- Lookup.Code
+SequenceOrder int
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime
+
+
+# Web page/App would have space to broadcast Ad.
+# Different Placeholder for different type of Campaign.
+ProductCampaignSchedule
+-
+# Lookup.GroupCode = ProductCampaignType
+# Type = Lookup.Code [NewLaunch|SeasonalPromotion|Discount|etc.,]
+# Campaign schedule follows the TimeZone defined.
+# Lookup.GroupCode = TimeZone
+# Type = Lookup.Code [UTC|IST|GMT|NYT|etc.,]
+# Lookup.GroupCode = VisualType
+# VisualValueType = Lookup.Code [pdf|doc|png|jpg|etc.,]
+Id int Identity PK
+LocalisationId  int FK >- Localisation.Id
+ProductCampaignId int FK >- ProductCampaign.Id
+Type string  FK >- Lookup.Code
+FromDateTime DateTme
+ToDateTime DateTme
+TimeZone string FK >- Lookup.Code
+Remarks string
+EffectiveFrom Date
+EffectiveTo Date
+IsActive Date
+CreatedBy string 
+UpdatedBy string
+CreatedDateTime DateTime
+UpdatedDateTime DateTime	
+
+
+
+
+
+
+
