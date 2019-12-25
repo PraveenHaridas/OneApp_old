@@ -12,6 +12,8 @@
 -- LocaliedCountryspefic is a comma separated value.
 -- if LocaliedCountryspefic = blank,  the referene data entry in the table is all countries.
 -- Otherwise, the entry is applicable only to the country name in the comma separated values.
+Use OneApp
+GO
 
 SET XACT_ABORT ON
 
